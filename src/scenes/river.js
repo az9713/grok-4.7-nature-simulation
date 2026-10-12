@@ -64,7 +64,9 @@ export function createRiver() {
       void main() {
         vec3 n = normalize(vNormal);
         float h = fbm(vWorld.xz * 2.4);
-        n = normalize(n - dFdx(vWorld) * dFdx(h) * 3.0 - dFdy(vWorld) * dFdy(h) * 3.0);
+        float grit = vnoise(vWorld.xz * 16.0);
+        n = normalize(n - dFdx(vWorld) * dFdx(h) * 1.4 - dFdy(vWorld) * dFdy(h) * 1.4);
+        n = normalize(n - dFdx(vWorld) * dFdx(grit) * 0.08 - dFdy(vWorld) * dFdy(grit) * 0.08);
         float grain = fbm(vWorld.xz * 0.85);
         float fine = fbm(vWorld.xz * 6.0);
         vec3 mud = vec3(0.17, 0.11, 0.06);
@@ -72,7 +74,8 @@ export function createRiver() {
         vec3 forest = vec3(0.07, 0.09, 0.045);
         vec3 albedo = mix(mud, grass, smoothstep(-0.05, 0.7, vWorld.y));
         albedo = mix(albedo, forest, smoothstep(1.1, 3.4, vWorld.y));
-        albedo *= 0.82 + 0.28 * grain;
+        albedo *= 0.78 + 0.34 * grain;
+        albedo = mix(albedo, albedo * (0.82 + 0.28 * grit), 0.55);
         albedo = mix(albedo, albedo * 0.72, fine * 0.35);
         float wet = smoothstep(0.85, 0.02, vWorld.y);
         albedo = mix(albedo, albedo * vec3(0.32, 0.28, 0.22), wet);
@@ -159,10 +162,8 @@ export function createRiver() {
         vec2 perp = vec2(-flow.y, flow.x);
         vec2 uv1 = vec2(dot(vWorld.xz, perp) * 0.55, dot(vWorld.xz, flow) * 0.35 - uTime * 0.35);
         vec2 uv2 = vec2(dot(vWorld.xz, perp) * 1.3, dot(vWorld.xz, flow) * 0.8 - uTime * 0.62);
-        float h = vnoise(uv1 * 4.0) * 0.55 + vnoise(uv2 * 7.0) * 0.3 + vnoise(uv2 * 16.0) * 0.15;
-        float hx = dFdx(h);
-        float hy = dFdy(h);
-        vec3 n = normalize(vec3(-hx * 1.7, 1.0, -hy * 1.7));
+        float h = vnoise(uv1 * 5.0) * 0.45 + vnoise(uv2 * 9.0) * 0.25 + vnoise(uv2 * 22.0) * 0.12;
+        vec3 n = normalize(vec3(-dFdx(h) * 2.4, 1.0, -dFdy(h) * 2.4));
         vec3 I = normalize(vWorld - cameraPosition);
         vec3 R = reflect(I, n);
         vec3 env = skyColor(R, uSun, uMoon, uTime, 0.0, 0.0, 0.0);
@@ -176,7 +177,7 @@ export function createRiver() {
         float broad = pow(max(dot(n, halfV), 0.0), 36.0);
         float glint = step(0.8, vnoise(vWorld.xz * 16.0 + vec2(0.0, -uTime * 0.5)));
         vec3 spec = vec3(1.0, 0.78, 0.48);
-        col += spec * (tight * 3.2 + broad * 0.18 + broad * glint * 2.2);
+        col += spec * (tight * 1.6 + broad * 0.08 + broad * glint * 2.8);
         float foam = edge * (0.35 + 0.65 * vnoise(uv2 * 2.0));
         col = mix(col, vec3(0.85, 0.72, 0.58), foam * 0.28);
         float dist = length(vWorld - cameraPosition);

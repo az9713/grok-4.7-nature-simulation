@@ -112,7 +112,7 @@ vec3 skyColor(vec3 rd, vec3 sun, vec3 moon, float time, float mode, float flash,
     vec3 zenith = vec3(0.035, 0.042, 0.05);
     vec3 hor = vec3(0.15, 0.16, 0.17);
     col = mix(hor, zenith, smoothstep(0.0, 0.55, h));
-    col += vec3(0.75, 0.8, 0.85) * flash * exp(-abs(h) * 1.2) * 0.9;
+    col += vec3(0.75, 0.8, 0.85) * flash * exp(-abs(h) * 1.6) * 0.28;
   } else {
     vec3 zenith = vec3(0.26, 0.46, 0.78);
     vec3 hor = vec3(0.70, 0.80, 0.84);
@@ -136,7 +136,7 @@ vec3 skyColor(vec3 rd, vec3 sun, vec3 moon, float time, float mode, float flash,
     if (mode > 1.5 && mode < 2.5) {
       float d = smoothstep(0.32, 0.66, n);
       vec3 cloud = mix(vec3(0.025, 0.03, 0.034), vec3(0.62, 0.66, 0.7), clamp(flash, 0.0, 1.0));
-      cloud += vec3(0.9, 0.95, 1.0) * flash * smoothstep(0.5, 0.85, n2) * 0.45;
+      cloud += vec3(0.9, 0.95, 1.0) * flash * smoothstep(0.5, 0.85, n2) * 0.22;
       col = mix(col, cloud, d * 0.95);
     } else if (mode < 0.5) {
       float d = smoothstep(0.40, 0.66, n);

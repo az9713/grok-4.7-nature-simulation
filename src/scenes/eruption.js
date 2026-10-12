@@ -121,12 +121,13 @@ export function createEruption() {
           vec2 p = vWorld.xz * 0.55;
           float flow = fbm(p * 1.6 + vec2(0.0, -uTime * 0.05));
           float n = fbm(p * 2.4 + vec2(sin(uTime * 0.07), -uTime * 0.08));
-          float crack = smoothstep(0.09, 0.0, abs(n - 0.5));
-          crack = max(crack, smoothstep(0.055, 0.0, abs(fbm(p * 5.5 + vec2(uTime * 0.03, -uTime * 0.1)) - 0.46)));
-          float hot = clamp(crack * (0.75 + uEnergy), 0.0, 1.0);
-          vec3 crust = vec3(0.015, 0.01, 0.008) * (0.7 + 0.4 * flow);
-          vec3 col = mix(crust, blackbody(0.55 + 0.45 * hot), hot);
-          col *= mix(0.15, 2.6, hot);
+          float crack = smoothstep(0.2, 0.02, abs(n - 0.5));
+          crack = max(crack, smoothstep(0.12, 0.0, abs(fbm(p * 5.5 + vec2(uTime * 0.03, -uTime * 0.1)) - 0.46)));
+          float plates = smoothstep(0.35, 0.7, flow);
+          float hot = clamp(crack * (0.85 + uEnergy) + plates * 0.18, 0.0, 1.0);
+          vec3 crust = vec3(0.012, 0.008, 0.006) * (0.45 + 0.7 * plates);
+          vec3 col = mix(crust, blackbody(0.5 + 0.5 * hot), smoothstep(0.05, 0.55, hot));
+          col *= mix(0.35, 2.8, hot);
           float rim = smoothstep(0.95, 0.55, vUv.y);
           col += blackbody(0.8) * rim * hot * 0.3;
           gl_FragColor = vec4(col, 1.0);
@@ -209,7 +210,7 @@ export function createEruption() {
             vec3 hot = vec3(0.42, 0.2, 0.1);
             vec3 ash = vec3(0.1, 0.09, 0.085);
             vec3 col = mix(hot, ash, vH);
-            float a = soft * fade * 0.28;
+            float a = soft * fade * 0.42;
             gl_FragColor = vec4(col, a);
           }
         }
@@ -221,7 +222,7 @@ export function createEruption() {
     return { points, mat }
   }
 
-  const smoke = plume(4200, 'smoke')
+  const smoke = plume(6500, 'smoke')
   const fire = plume(700, 'fire')
   root.add(smoke.points)
   root.add(fire.points)
@@ -245,7 +246,7 @@ export function createEruption() {
     radius: 0.35,
     exposure: 0.95,
     cameraPos: new THREE.Vector3(cx, cy, cz),
-    cameraTarget: new THREE.Vector3(-cx * 0.72, cy - 0.35, -cz * 0.72),
+    cameraTarget: new THREE.Vector3(-cx * 0.35, cy - 2.1, -cz * 0.35),
     update(time) {
       const energy = eruptionEnergy(time)
       sky.uniforms.uTime.value = time

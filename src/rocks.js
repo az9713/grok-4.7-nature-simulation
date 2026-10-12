@@ -34,12 +34,14 @@ void main() {
   albedo *= mix(1.0, 0.62, uWet);
   vec3 sun = normalize(uSunDir);
   float ndl = max(dot(n, sun), 0.0);
-  vec3 hemi = mix(vec3(0.07, 0.06, 0.05), uSunColor * 0.25, n.y * 0.5 + 0.5);
-  vec3 col = albedo * (hemi + uSunColor * ndl * 1.15);
+  float wrap = ndl * 0.72 + 0.28;
+  vec3 hemi = mix(vec3(0.1, 0.08, 0.06), uSunColor * 0.35, n.y * 0.5 + 0.5);
+  vec3 col = albedo * (hemi + uSunColor * wrap * 1.25);
   vec3 view = normalize(cameraPosition - vWorld);
   vec3 halfV = normalize(sun + view);
-  float spec = pow(max(dot(n, halfV), 0.0), mix(16.0, 110.0, uWet));
-  col += uSunColor * spec * (0.08 + uWet * 0.55);
+  float spec = pow(max(dot(n, halfV), 0.0), mix(18.0, 90.0, uWet));
+  float chip = step(0.62, vnoise(vWorld.xz * 12.0 + vWorld.y));
+  col += uSunColor * spec * (0.12 + uWet * 0.7) * (0.35 + 0.65 * chip);
   gl_FragColor = vec4(col, 1.0);
 }
 `
@@ -58,7 +60,7 @@ function materialFor(key, uniforms) {
 }
 
 export function rockGeometry(seed, radius) {
-  const geo = new THREE.IcosahedronGeometry(radius, 2)
+  const geo = new THREE.IcosahedronGeometry(radius, 3)
   const pos = geo.attributes.position
   const v = new THREE.Vector3()
   for (let i = 0; i < pos.count; i++) {

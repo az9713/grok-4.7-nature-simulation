@@ -47,7 +47,7 @@ export function createStorm() {
   const sky = createSky({ mode: 2, sun })
   root.add(sky.mesh)
 
-  const seaGeo = new THREE.PlaneGeometry(220, 220, 180, 180)
+  const seaGeo = new THREE.PlaneGeometry(220, 220, 280, 280)
   seaGeo.rotateX(-Math.PI / 2)
   const seaMat = new THREE.ShaderMaterial({
     uniforms: {
@@ -59,17 +59,17 @@ export function createStorm() {
     vertexShader: /* glsl */ `
       varying vec3 vWorld;
       uniform float uTime;
-      float wave(vec2 p) {
+      float seaH(vec2 p) {
         float h = 0.0;
-        h += sin(dot(p, vec2(0.16, 0.22)) + uTime * 0.55) * 0.42;
-        h += sin(dot(p, vec2(-0.31, 0.12)) + uTime * 0.8) * 0.22;
-        h += sin(dot(p, vec2(0.08, 0.48)) + uTime * 1.15) * 0.1;
-        h += sin(dot(p, vec2(0.7, -0.2)) + uTime * 1.5) * 0.04;
+        h += sin(dot(p, vec2(0.16, 0.22)) + uTime * 0.55) * 0.36;
+        h += sin(dot(p, vec2(-0.31, 0.12)) + uTime * 0.8) * 0.18;
+        h += sin(dot(p, vec2(0.55, 0.18)) + uTime * 1.15) * 0.07;
+        h += sin(dot(p, vec2(1.1, -0.45)) + uTime * 1.7) * 0.028;
         return h;
       }
       void main() {
         vec3 pos = position;
-        pos.y = wave(pos.xz);
+        pos.y = seaH(pos.xz);
         vec4 world = modelMatrix * vec4(pos, 1.0);
         vWorld = world.xyz;
         gl_Position = projectionMatrix * viewMatrix * world;
@@ -82,22 +82,35 @@ export function createStorm() {
       uniform float uFlash;
       uniform vec3 uSun;
       uniform vec3 uMoon;
+      float seaH(vec2 p) {
+        float h = 0.0;
+        h += sin(dot(p, vec2(0.16, 0.22)) + uTime * 0.55) * 0.36;
+        h += sin(dot(p, vec2(-0.31, 0.12)) + uTime * 0.8) * 0.18;
+        h += sin(dot(p, vec2(0.55, 0.18)) + uTime * 1.15) * 0.07;
+        h += sin(dot(p, vec2(1.1, -0.45)) + uTime * 1.7) * 0.028;
+        return h;
+      }
       void main() {
-        vec3 n = normalize(cross(dFdy(vWorld), dFdx(vWorld)));
-        if (dot(n, cameraPosition - vWorld) < 0.0) n = -n;
+        vec2 p = vWorld.xz;
+        float e = 0.18;
+        float h0 = seaH(p);
+        vec3 n = normalize(vec3(-(seaH(p + vec2(e, 0.0)) - h0) / e, 1.0, -(seaH(p + vec2(0.0, e)) - h0) / e));
+        float micro = vnoise(p * 2.8 + vec2(uTime * 0.15, -uTime * 0.08));
+        n = normalize(n + vec3(-dFdx(micro), 0.0, -dFdy(micro)) * 0.45);
         vec3 I = normalize(vWorld - cameraPosition);
         vec3 R = reflect(I, n);
         vec3 env = skyColor(R, uSun, uMoon, uTime, 2.0, uFlash, 0.0);
         float fres = pow(1.0 - max(dot(-I, n), 0.0), 5.0);
-        fres = mix(0.06, 1.0, fres);
-        vec3 deep = vec3(0.012, 0.02, 0.026);
-        vec3 col = mix(deep, env * vec3(0.55, 0.6, 0.64), fres);
-        float crest = smoothstep(0.42, 0.72, vWorld.y);
-        float foamNoise = vnoise(vWorld.xz * 1.4 + vec2(uTime * 0.15, -uTime * 0.05));
-        col = mix(col, vec3(0.62, 0.66, 0.68), crest * foamNoise * 0.65);
-        col += vec3(0.55, 0.6, 0.66) * uFlash * (0.18 + fres * 0.45);
-        float dist = length(vWorld.xz);
-        col = mix(col, vec3(0.16, 0.17, 0.18), 1.0 - exp(-dist * 0.012));
+        fres = mix(0.05, 1.0, fres);
+        vec3 deep = vec3(0.01, 0.018, 0.024);
+        vec3 col = mix(deep, env * vec3(0.45, 0.5, 0.55), fres);
+        float crest = smoothstep(0.22, 0.48, h0);
+        float foam = crest * smoothstep(0.55, 0.82, vnoise(p * 1.8 + vec2(uTime * 0.12, 0.0)));
+        foam *= smoothstep(0.35, 0.7, vnoise(vec2(dot(p, vec2(0.7, 0.2)) * 0.4, uTime * 0.05)));
+        col = mix(col, vec3(0.55, 0.58, 0.6), foam * 0.7);
+        col += vec3(0.55, 0.6, 0.66) * uFlash * (0.15 + fres * 0.5);
+        float dist = length(p);
+        col = mix(col, vec3(0.12, 0.13, 0.145), 1.0 - exp(-dist * 0.01));
         gl_FragColor = vec4(col, 1.0);
       }
     `,

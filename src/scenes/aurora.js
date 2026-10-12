@@ -147,7 +147,7 @@ export function createAurora() {
         void main() {
           vec2 uv = vWorld.xz * 0.22;
           float h = vnoise(uv * 2.0 + uTime * 0.04) * 0.7 + vnoise(uv * 5.0 - uTime * 0.06) * 0.3;
-          vec3 n = normalize(vec3(-dFdx(h) * 1.6, 1.0, -dFdy(h) * 1.6));
+          vec3 n = normalize(vec3(-dFdx(h) * 0.7, 1.0, -dFdy(h) * 0.7));
           vec3 I = normalize(vWorld - cameraPosition);
           vec3 R = reflect(I, n);
           vec3 env = skyColor(R, uSun, uMoon, uTime, 1.0, 0.0, 1.0);

@@ -107,8 +107,10 @@ function waterSheet(width, height, speed) {
         float spray = smoothstep(0.22, 0.0, uv.y);
         float alpha = edge * (0.78 + 0.18 * streak);
         alpha *= mix(1.0, 0.25 + fine * 0.75, spray);
-        vec3 col = mix(vec3(0.62, 0.7, 0.68), vec3(0.97, 0.98, 0.97), 0.35 + 0.65 * streak);
-        col = mix(col, vec3(0.35, 0.45, 0.44), smoothstep(0.55, 0.95, fine) * (1.0 - spray) * 0.45);
+        vec3 col = mix(vec3(0.42, 0.5, 0.48), vec3(0.93, 0.95, 0.94), streak);
+        float vein = smoothstep(0.62, 0.92, fine);
+        col = mix(col, vec3(0.18, 0.24, 0.23), vein * (1.0 - spray) * 0.72);
+        col += vec3(0.9, 0.95, 0.93) * streak * (1.0 - vein) * 0.25;
         gl_FragColor = vec4(col, clamp(alpha, 0.0, 0.94));
       }
     `,
@@ -202,7 +204,7 @@ export function createFalls() {
   pool.renderOrder = 2
   root.add(pool)
 
-  const mistCount = 900
+  const mistCount = 1800
   const mistGeo = new THREE.BufferGeometry()
   const seeds = new Float32Array(mistCount)
   const sizes = new Float32Array(mistCount)
@@ -210,7 +212,7 @@ export function createFalls() {
   const rng = mulberry32(8)
   for (let i = 0; i < mistCount; i++) {
     seeds[i] = rng()
-    sizes[i] = 16 + rng() * 48
+    sizes[i] = 36 + rng() * 90
     base[i * 3] = (rng() - 0.5) * 3.2
     base[i * 3 + 1] = rng()
     base[i * 3 + 2] = rng()
@@ -244,9 +246,10 @@ export function createFalls() {
       void main() {
         float d = length(gl_PointCoord - 0.5);
         if (d > 0.5) discard;
-        float a = smoothstep(0.5, 0.05, d) * smoothstep(0.0, 0.15, vLife) * smoothstep(1.0, 0.55, vLife);
-        vec3 col = vec3(0.82, 0.86, 0.84);
-        gl_FragColor = vec4(col, a * 0.35);
+        float a = smoothstep(0.5, 0.0, d);
+        a *= smoothstep(0.0, 0.2, vLife) * smoothstep(1.0, 0.45, vLife);
+        vec3 col = vec3(0.78, 0.82, 0.8);
+        gl_FragColor = vec4(col, a * 0.16);
       }
     `,
   })
@@ -327,12 +330,12 @@ export function createFalls() {
     fov: 42,
     drift: 0.08,
     parallax: 0.22,
-    bloom: 0.18,
-    threshold: 0.86,
+    bloom: 0.1,
+    threshold: 0.9,
     radius: 0.28,
     exposure: 0.92,
-    cameraPos: new THREE.Vector3(0.2, 1.45, 6.4),
-    cameraTarget: new THREE.Vector3(0, 4.4, 0.2),
+    cameraPos: new THREE.Vector3(0.15, 1.7, 7.6),
+    cameraTarget: new THREE.Vector3(0, 3.6, 0.3),
     update(time) {
       sky.uniforms.uTime.value = time
       for (const sheet of sheets) sheet.mat.uniforms.uTime.value = time
