@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How Phenomena is drawn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=Literata:opsz,wght@7..72,400;7..72,650&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --paper: #f3ecdf;
+        --dim: rgba(243, 236, 223, 0.68);
+        --brass: #d7b89a;
+        --ink: #12141a;
+        --code: #1c1f27;
+        --line: rgba(243, 236, 223, 0.16);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: Literata, Georgia, serif;
+        font-size: 18px;
+        line-height: 1.55;
+      }
+      main {
+        width: min(740px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 48px 0 80px;
+      }
+      a { color: var(--brass); }
+      .back {
+        font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-size: 13px;
+        text-decoration: none;
+      }
+      h1 {
+        font-family: "Bodoni Moda", Palatino, serif;
+        font-weight: 500;
+        font-style: italic;
+        font-size: clamp(46px, 8vw, 78px);
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+        margin: 18px 0 12px;
+      }
+      h2 {
+        font-family: "Bodoni Moda", Palatino, serif;
+        font-weight: 500;
+        font-style: italic;
+        font-size: 34px;
+        line-height: 1.05;
+        margin: 2.2em 0 0.4em;
+      }
+      h3 {
+        font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 15px;
+        color: var(--brass);
+        margin: 1.6em 0 0.4em;
+      }
+      p { margin: 0.7em 0; }
+      .lede { font-size: 21px; color: var(--dim); }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 22px;
+        margin: 22px 0 8px;
+        padding: 14px 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 14px;
+        color: var(--brass);
+      }
+      ul { padding-left: 1.2em; }
+      li { margin: 0.35em 0; }
+      code {
+        font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+        font-size: 0.86em;
+      }
+      p code, li code {
+        background: var(--code);
+        padding: 0.05em 0.35em;
+      }
+      pre {
+        background: var(--code);
+        border: 1px solid var(--line);
+        padding: 14px 16px;
+        overflow-x: auto;
+        line-height: 1.45;
+      }
+      pre code { font-size: 13px; }
+      .file {
+        margin: 1.2em 0 0.35em;
+        font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+        letter-spacing: 0.06em;
+        font-size: 14px;
+        color: var(--dim);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="back" href="%BASE_URL%">Phenomena</a>
+      <h1>How it is drawn</h1>
+      <p class="lede">
+        Five moving landscapes, and the sound that plays with them, come from math that runs while you watch. This page is the mechanism, scene by scene.
+      </p>
+      <div class="meta">
+        <span>Agent: Cursor</span>
+        <span>Model: Grok 4.7</span>
+        <span>Effort: one session, high</span>
+        <span>11 October 2026</span>
+      </div>
+
+      <h2>Who built it, and how hard</h2>
+      <p>
+        The coding agent was Cursor. The model in that session was Grok 4.7. The work fit in one sitting: a first full build of the five scenes and the synthesizer, then a correction pass after the frames were actually on screen.
+      </p>
+      <p>
+        That second pass was a large part of the effort. The first eruption camera sat outside a tall rim and the frame was black. The first waterfall had holes where the cliff mesh crossed the water sheet. Cardboard conifers on the river were removed after they read as toys. Effort here means writing the shaders and then throwing out the parts that failed in the browser, not a multi-week research program.
+      </p>
+      <p>
+        The brief pointed at <a href="https://github.com/az9713/animate-libs">animate-libs</a> as a way of thinking: pictures and scores made in code. That repo’s styles (cut paper, risograph, pixel, isometric) were left alone. Phenomena uses a different stack, aimed at natural scenes.
+      </p>
+
+      <h2>Stack</h2>
+      <ul>
+        <li><strong>Picture.</strong> <a href="https://threejs.org/">Three.js</a> (WebGL), custom GLSL in <code>ShaderMaterial</code>, and the post stack from Three’s addons: <code>EffectComposer</code>, <code>RenderPass</code>, <code>UnrealBloomPass</code>, a small grain pass, and <code>OutputPass</code> with ACES tone mapping.</li>
+        <li><strong>Sound.</strong> The Web Audio API. Looping noise buffers, biquad filters, a few quiet sine oscillators, and short envelopes for cracks, bubbles, and thunder. No samples.</li>
+        <li><strong>App shell.</strong> Vite, one page, plain DOM for the titles and the scene buttons. No React.</li>
+        <li><strong>Shared clock.</strong> <code>src/shared.js</code> holds the eruption pulse and the lightning timetable. The shader and the synthesizer both read it, so a visual burst and a louder roar are the same event.</li>
+      </ul>
+      <p>
+        There is no heightmap file, no photo texture, and no recorded ambience. Terrain, sky, water, fire, and weather are functions of position and time.
+      </p>
+
+      <h2>The shared tricks</h2>
+      <p>
+        Almost every surface starts from value noise. A hash of the grid cell, a smooth blend across the cell, then five octaves added together. That sum is fractional Brownian motion, <code>fbm</code>. Hills, clouds, lava crust, and rock grain are the same function at different scales.
+      </p>
+      <p class="file">src/lib.glsl.js</p>
+      <pre><code>float vnoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  float a = hash12(i);
+  float b = hash12(i + vec2(1.0, 0.0));
+  float c = hash12(i + vec2(0.0, 1.0));
+  float d = hash12(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}</code></pre>
+      <p>
+        The sky is one function, <code>skyColor</code>, with a mode number. Sunset, night, storm, and day are branches of the same shader. Water does not use a reflection camera. It reflects the view ray and calls <code>skyColor</code> on that ray, so the river, the lake, and the sea mirror the sky that is already in the dome.
+      </p>
+      <p class="file">src/lib.glsl.js — sunset branch</p>
+      <pre><code>vec3 zenith = vec3(0.10, 0.24, 0.52);
+vec3 hor = vec3(0.98, 0.40, 0.16);
+col = mix(zenith, midc, smoothstep(0.62, 0.0, h));
+col = mix(col, hor, exp(-abs(h) * 3.1));
+col += vec3(1.0, 0.40, 0.08) * pow(max(mu, 0.0), 5.0);</code></pre>
+      <p>
+        <code>h</code> is how high the ray points. <code>mu</code> is how close it is to the sun. The sun itself is a small disk plus a tight exponential glow. Bloom then spreads only the pixels that are already bright. When bloom was too strong, the whole frame washed out. The threshold is set per scene so the sun, the lava cracks, and the aurora cores glow, and the ground does not.
+      </p>
+      <p>
+        Sound is a set of buses, one per scene, all built when you first click. Each bus is filtered noise at a gain of zero until that scene is current. Switching scenes ramps the old bus down and the new one up over about a quarter of a second.
+      </p>
+
+      <h2>The river</h2>
+      <p>
+        The valley is a grid. For every vertex, JavaScript evaluates a centerline and a bank. The bed stays low. Far from the centerline the ground rises into side hills. The same centerline builds the water ribbon, so the mesh and the banks agree.
+      </p>
+      <p class="file">src/scenes/river.js</p>
+      <pre><code>export function riverCenter(z) {
+  return Math.sin(z * 0.075) * 5.2
+    + Math.sin(z * 0.019 + 1.2) * 3.1
+    + Math.sin(z * 0.21) * 0.55
+}
+
+export function terrainHeight(x, z) {
+  const c = riverCenter(z)
+  const d = Math.abs(x - c)
+  const bank = smoothstep(half * 0.82, half + 5.2, d)
+  const sideHill = smoothstep(half + 6.0, half + 18.0, d)
+    * Math.max(0, fbm(x * 0.06, z * 0.06) - 0.38) * 8.0
+  return -0.28 + bank * (0.42 + n * 0.85 + broad * 0.9) + sideHill
+}</code></pre>
+      <p>
+        The water shader scrolls noise along the downstream direction, then takes screen-space derivatives of that height to build a normal. The view ray is reflected through that normal into <code>skyColor</code>. Schlick’s fresnel mixes a dark body color with that reflection: looking along the river, you mostly see sky; looking down, you see more of the water.
+      </p>
+      <p>
+        The bright path is two specular lobes, a very tight one and a broad one, plus a threshold on high-frequency noise so the path breaks into glints instead of a solid white stripe.
+      </p>
+      <p class="file">src/scenes/river.js — glitter</p>
+      <pre><code>vec3 R = reflect(I, n);
+vec3 env = skyColor(R, uSun, uMoon, uTime, 0.0, 0.0, 0.0);
+float fres = pow(1.0 - max(dot(-I, n), 0.0), 5.0);
+vec3 col = mix(deep, env, fres);
+float tight = pow(max(dot(n, halfV), 0.0), 700.0);
+float broad = pow(max(dot(n, halfV), 0.0), 36.0);
+float glint = step(0.8, vnoise(vWorld.xz * 16.0 + vec2(0.0, -uTime * 0.5)));
+col += spec * (tight * 3.2 + broad * 0.18 + broad * glint * 2.2);</code></pre>
+      <p>
+        Stones are displaced icosahedra with the same sun vector as the terrain shader. Their sound is a quiet lowpassed noise bed plus sparse sine blips, the bubbles.
+      </p>
+
+      <h2>The falls</h2>
+      <p>
+        The cliff is a vertical plane whose vertices are pushed along Z by <code>fbm</code>, so the rock face is uneven without a sculpted model. The falling water is three transparent planes in front of that face, each scrolling noise downward at a different speed. Overlapping sheets are what makes the column look thick. A single sheet looked like a card.
+      </p>
+      <p class="file">src/scenes/falls.js</p>
+      <pre><code>float slide = uv.y * 0.35 + uTime * uSpeed;
+float streak = vnoise(vec2(uv.x * 10.0, slide * 2.2));
+float fine = vnoise(vec2(uv.x * 36.0 + streak, slide * 6.0));
+float spray = smoothstep(0.22, 0.0, uv.y);
+float alpha = edge * (0.78 + 0.18 * streak);
+alpha *= mix(1.0, 0.25 + fine * 0.75, spray);</code></pre>
+      <p>
+        <code>slide</code> moves the noise sample down the plane, which is the whole of the falling motion. Near <code>uv.y = 0</code>, the bottom of the sheet, alpha breaks apart. That is the spray. Mist is a point cloud whose life is <code>fract(seed + time)</code>, so each puff rises, fades, and restarts. The pool under the sheet is a ring of sine waves centered on the impact point, with foam where the ring is tight.
+      </p>
+      <p>
+        The bow is not a texture. A fragment’s view direction is compared with the direction opposite the sun. A primary rainbow sits near 42 degrees from that antisolar point, a faint secondary near 51. Hue runs across that thin band. If the sun were in front of the camera, the band would miss the mist and the bow would disappear, which is what a real bow does.
+      </p>
+      <p class="file">src/scenes/falls.js</p>
+      <pre><code>float d = abs(ang - 42.0);
+float band = smoothstep(2.4, 0.15, d);
+float d2 = abs(ang - 51.0);
+float band2 = smoothstep(1.5, 0.2, d2) * 0.35;
+float hue = clamp((ang - 40.2) / 3.4, 0.0, 1.0);</code></pre>
+      <p>
+        The falls bus is the loudest noise stack: brown noise under about 320 Hz, a mid band, and a hiss above 3.8 kHz, plus the same short bubbles as the river, faster.
+      </p>
+
+      <h2>The aurora</h2>
+      <p>
+        The curtains are not meshes. They are painted inside the sky function, from the direction of the ray. Three layers, each a warped sine folded into a curtain mask, times vertical rays, times a fade so the light dies before the ground and before the top of the sky. Green at the bottom, violet higher, a red fringe in the first few degrees of elevation. That last mix is the lower border you see on a real arc.
+      </p>
+      <p class="file">src/lib.glsl.js — auroraColor</p>
+      <pre><code>float fold = sin(x + time * (0.07 + fi * 0.025) + vnoise(rd.xy * 2.4 + fi) * 2.4);
+float curtain = smoothstep(0.15, 0.9, fold * 0.5 + 0.5);
+float rays = pow(0.5 + 0.5 * sin(rd.x * (28.0 + fi * 9.0) + vnoise(rd.xy * 6.0) * 4.0), 2.4);
+vec3 c = mix(green, violet, fi * 0.48);
+c = mix(red, c, smoothstep(0.0, 0.14, rd.y));
+sum += c * a * (0.42 - fi * 0.08);</code></pre>
+      <p>
+        Stars are a hash of the ray, quantized onto a grid. A cell lights only if the hash clears 0.993. A sine on that hash twinkles it. The moon is a disk on the moon direction, with a second noise for the maria, and the sky color is multiplied by zero inside the disk so stars do not punch through it.
+      </p>
+      <p>
+        Mountains are a triangle strip. Height at each X is <code>peakShape</code>, a few sines, squared so the valleys sit on the ground and the peaks spike. Two ranges, one near and dark, one far and slightly lighter. They write depth, so they cover the aurora where a peak crosses it.
+      </p>
+      <p>
+        The lake is a disk. Its shader builds a small normal from calm noise, reflects the view, and calls the night sky with the aurora flag on. The reflection is the same function as the sky above, sampled in the mirror direction. Ripples stay small on purpose. A strong normal shattered the reflection into a cartoon.
+      </p>
+      <p class="file">src/scenes/aurora.js</p>
+      <pre><code>vec3 I = normalize(vWorld - cameraPosition);
+vec3 R = reflect(I, n);
+vec3 env = skyColor(R, uSun, uMoon, uTime, 1.0, 0.0, 1.0);
+float fres = pow(1.0 - max(dot(-I, n), 0.0), 5.0);
+vec3 col = mix(env * 0.72, env, fres);</code></pre>
+      <p>
+        The aurora bus is the quiet one: bandpassed noise slowly swept by a low-frequency oscillator, plus three sine tones around 147, 220, and 311 Hz at gains under 0.01. They read as air, not as a chord, because they sit under the wind.
+      </p>
+
+      <h2>The eruption</h2>
+      <p>
+        The crater is another height function: a Gaussian rim, a bowl subtracted in the middle, and <code>fbm</code> for rubble. The lava height is measured from the bottom of that bowl and a disk is placed there. Standing on the rim is a camera placement problem. The first camera was outside the rim, the rim was taller than the lens, and the picture was the black outer slope. The camera now sits on the rim and looks across the bowl.
+      </p>
+      <p>
+        Cracks are where the noise field crosses 0.5. <code>smoothstep</code> of the absolute distance from 0.5 makes a thin bright line. A second, finer field scrolls faster, so plates and seams move at different rates. Color along that line is a hand-built blackbody ramp: dull red, orange, yellow, white. The hot pixels are multiplied above 1 so bloom has something to catch. The crust stays near black.
+      </p>
+      <p class="file">src/scenes/eruption.js</p>
+      <pre><code>float n = fbm(p * 2.4 + vec2(sin(uTime * 0.07), -uTime * 0.08));
+float crack = smoothstep(0.09, 0.0, abs(n - 0.5));
+float hot = clamp(crack * (0.75 + uEnergy), 0.0, 1.0);
+vec3 col = mix(crust, blackbody(0.55 + 0.45 * hot), hot);
+col *= mix(0.15, 2.6, hot);</code></pre>
+      <p>
+        <code>uEnergy</code> is <code>eruptionEnergy(time)</code> from <code>src/shared.js</code>. For most of an 11-second cycle it idles. Then it spikes and decays. The same number opens the roar filter’s gain in the synthesizer. Picture and sound share the pulse.
+      </p>
+      <p class="file">src/shared.js</p>
+      <pre><code>export function eruptionEnergy(time) {
+  const x = (time % 11) / 11
+  const base = 0.38 + 0.12 * Math.sin(time * 0.65)
+  if (x &lt; 0.62) return base
+  const k = (x - 0.62) / 0.38
+  return base + Math.exp(-k * 3.4)
+}</code></pre>
+      <p>
+        The column is two point clouds, smoke and fire, with no stored animation. Each point has a seed. Its age is the fractional part of time plus that seed, so the point is born at the vent, rises, widens, and restarts. Fire is additive and short. Smoke is ordinary alpha and wider.
+      </p>
+      <p class="file">src/scenes/eruption.js — plume vertex</p>
+      <pre><code>float life = fract(uTime * speed * (0.75 + aSeed2) + aSeed);
+float spread = mix(0.12, 3.4, life * life) * (0.75 + uEnergy);
+pos.y = uBase + life * 11.0;
+pos.x = cos(ang) * spread;</code></pre>
+      <p>
+        Crackle is not a loop. While the eruption scene is current, the audio clock schedules tiny bandpassed noise bursts a tenth of a second ahead, with a random gap. The low rumble is brown noise under 80 Hz, always on under the cracks.
+      </p>
+
+      <h2>The storm</h2>
+      <p>
+        The sea is a flat grid displaced in the vertex shader by four sines with different directions and speeds. The fragment does not use the mesh normals. It crosses the screen-space derivatives of the displaced position, which follows the waves even where the grid is coarse. Foam appears only where the crest is high and a noise field agrees, so the whitecaps are patches, not a painted line.
+      </p>
+      <p class="file">src/scenes/storm.js</p>
+      <pre><code>float wave(vec2 p) {
+  float h = 0.0;
+  h += sin(dot(p, vec2(0.16, 0.22)) + uTime * 0.55) * 0.42;
+  h += sin(dot(p, vec2(-0.31, 0.12)) + uTime * 0.8) * 0.22;
+  h += sin(dot(p, vec2(0.08, 0.48)) + uTime * 1.15) * 0.1;
+  return h;
+}
+vec3 n = normalize(cross(dFdy(vWorld), dFdx(vWorld)));
+vec3 env = skyColor(R, uSun, uMoon, uTime, 2.0, uFlash, 0.0);</code></pre>
+      <p>
+        <code>uFlash</code> is added into the sea and into the storm sky. Clouds in that sky mode are an <code>fbm</code> threshold, and the flash lifts them from near-black toward gray. Rain is two point clouds parented to the camera, wrapped with <code>mod</code> so the box of drops stays around the lens. Each drop is a vertically stretched point-sprite.
+      </p>
+      <p>
+        Lightning is a timetable, not a random roll, so the picture and the thunder can share it. Seven strikes repeat every 36 seconds. The flash envelope is two exponentials, a sharp peak and a longer tail, so the clouds stay lit after the bolt. Thunder is scheduled on the audio clock at <code>distance / 340</code> seconds later. A strike 1.3 km away speaks about four seconds after the light. The thunder itself is lowpassed noise plus a sine that falls from about 78 Hz to 28 Hz.
+      </p>
+      <p class="file">src/shared.js</p>
+      <pre><code>export const STRIKES = [
+  { t: 1.4, meters: 520 },
+  { t: 7.2, meters: 1280 },
+  { t: 7.7, meters: 340 },
+  // ...
+]
+const env = Math.exp(-dt * 7.5) * 1.15 + Math.exp(-dt * 1.5) * 0.4</code></pre>
+      <p>
+        The bolt you see is one of four ribbon meshes, shown only while <code>activeStrike</code> matches it. The glow on the water is the flash uniform, not the ribbon.
+      </p>
+
+      <h2>What still shows the method</h2>
+      <p>
+        At a viewing distance the scenes hold. Up close, rock is still a shaded noise field, mist is still points, and the aurora is still a function of direction rather than a volume of glowing air. A real photograph has detail this code does not store, because nothing was captured. The trade is that every frame is generated, and the sound is generated with it.
+      </p>
+      <p>
+        The files that matter are <code>src/lib.glsl.js</code> for noise, sky, and aurora, <code>src/scenes/</code> for each landscape, <code>src/shared.js</code> for the clocks, and <code>src/audio.js</code> for the buses.
+      </p>
+    </main>
+  </body>
+</html>

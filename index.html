@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phenomena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div class="frame" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <header class="hud top">
+      <div>
+        <p class="word">Phenomena</p>
+        <p class="fine">Picture and sound, both synthesized.</p>
+        <a href="%BASE_URL%journey.html">How it is drawn</a>
+      </div>
+      <button id="sound" type="button">Hear the scene</button>
+    </header>
+    <footer class="hud bottom">
+      <p class="place" id="place"></p>
+      <h1 id="title"></h1>
+      <canvas id="scope" width="280" height="44" aria-hidden="true"></canvas>
+      <nav id="nav" aria-label="Scenes"></nav>
+      <p class="hint">Arrow keys change the scene</p>
+    </footer>
+    <div id="veil"></div>
+    <p id="fail">This piece needs WebGL.</p>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
